@@ -32,11 +32,25 @@ export const postItem = createAsyncThunk(
 );
 
 export const getItem = createAsyncThunk(
-  'todo',
-  async function ({rejectWithValue, dispatch}) {
-    
+  "todo",
+  async function ({ rejectWithValue, dispatch }) {
+    try {
+      const response = await fetch(`${BASE_URL}/todo.json`);
+      const data = await response.json();
+      const transformData = [];
+      for (let key in data) {
+        transformData.push({
+          id: key,
+          email: data[key].email,
+          password: data[key].password,
+        });
+      }
+      return transformData;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
-)
+);
 
 export const todoSlice = createSlice({
   name: "todos",
@@ -45,8 +59,20 @@ export const todoSlice = createSlice({
     error: null,
     status: null,
   },
-  reducers: {
-
+  reducers: {},
+  extraReducers(buldier) {
+    buldier
+      .addCase(getItem.pending, (state, action) => {
+        state.error = null;
+        state.status = "loading";
+      })
+      .addCase(getItem.fulfilled, (state, action) => {
+        state.baseData = action.payload;
+        state.status = "resolved";
+      })
+      .addCase(getItem.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = "rejected";
+      });
   },
-  extraReducers() {},
 });
