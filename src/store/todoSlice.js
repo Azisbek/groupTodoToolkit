@@ -31,6 +31,13 @@ export const postItem = createAsyncThunk(
   }
 );
 
+export const getItem = createAsyncThunk(
+  'todo',
+  async function ({rejectWithValue, dispatch}) {
+    
+  }
+)
+
 export const todoSlice = createSlice({
   name: "todos",
   initialState: {
@@ -38,6 +45,8 @@ export const todoSlice = createSlice({
     error: null,
     status: null,
   },
-  reducers: {},
+  reducers: {
+
+  },
   extraReducers() {},
 });
