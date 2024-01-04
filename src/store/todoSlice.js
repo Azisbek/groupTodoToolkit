@@ -33,7 +33,7 @@ export const postItem = createAsyncThunk(
 
 export const getItem = createAsyncThunk(
   "todo",
-  async function ({ rejectWithValue, dispatch }) {
+  async function (_,{ rejectWithValue, dispatch }) {
     try {
       const response = await fetch(`${BASE_URL}/todo.json`);
       const data = await response.json();
