@@ -32,8 +32,8 @@ export const postItem = createAsyncThunk(
 );
 
 export const getItem = createAsyncThunk(
-  "todo",
-  async function (_,{ rejectWithValue, dispatch }) {
+  "todo/getItem",
+  async function (_, { rejectWithValue, dispatch }) {
     try {
       const response = await fetch(`${BASE_URL}/todo.json`);
       const data = await response.json();
@@ -52,6 +52,27 @@ export const getItem = createAsyncThunk(
   }
 );
 
+export const deleteItem = createAsyncThunk(
+  "todo/deleteItem",
+  async function (id, { rejectWithValue, dispatch }) {
+    try {
+      const response = await fetch(`${BASE_URL}/todo/${id}.json`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("server error");
+      }
+      dispatch(deleteHandler(id));
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const todoSlice = createSlice({
   name: "todos",
   initialState: {
@@ -59,7 +80,13 @@ export const todoSlice = createSlice({
     error: null,
     status: null,
   },
-  reducers: {},
+  reducers: {
+    deleteHandler(state, action) {
+      state.baseData = state.baseData.filter(
+        (todo) => todo.id !== action.payload
+      );
+    },
+  },
   extraReducers(buldier) {
     buldier
       .addCase(getItem.pending, (state, action) => {
@@ -76,3 +103,5 @@ export const todoSlice = createSlice({
       });
   },
 });
+
+export const { deleteHandler } = todoSlice.actions;
